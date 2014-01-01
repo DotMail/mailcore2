@@ -2,16 +2,15 @@
 
 using namespace mailcore;
 
+#if __APPLE__
+dispatch_queue_t operation_callback_queue = dispatch_queue_create("com.mailcore2.callbackqueue", DISPATCH_QUEUE_CONCURRENT);
+#endif
+
 Operation::Operation()
 {
     mCallback = NULL;
     mCancelled = false;
     pthread_mutex_init(&mLock, NULL);
-#if __APPLE__
-    mCallbackDispatchQueue = dispatch_get_main_queue();
-#else
-    mCallbackDispatchQueue = NULL;
-#endif
 }
 
 Operation::~Operation()
@@ -59,14 +58,4 @@ void Operation::afterMain()
 
 void Operation::start()
 {
-}
-
-void Operation::setCallbackDispatchQueue(dispatch_queue_t callbackDispatchQueue)
-{
-    mCallbackDispatchQueue = callbackDispatchQueue;
-}
-
-dispatch_queue_t Operation::callbackDispatchQueue()
-{
-    return mCallbackDispatchQueue;
 }

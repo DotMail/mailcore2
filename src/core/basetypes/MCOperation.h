@@ -12,7 +12,11 @@
 #ifdef __cplusplus
 
 namespace mailcore {
-    
+#ifdef __APPLE__
+    // This queue is internal to mailcore and is guaranteed to be a concurrent
+    // queue that all callbacks will be delivered on.
+    extern const dispatch_queue_t operation_callback_queue;
+#endif
     class OperationCallback;
     
     class Operation : public Object {
@@ -36,18 +40,10 @@ namespace mailcore {
         
         virtual void start();
         
-#ifdef __APPLE__
-        virtual void setCallbackDispatchQueue(dispatch_queue_t callbackDispatchQueue);
-        virtual dispatch_queue_t callbackDispatchQueue();
-#endif
-        
     private:
         OperationCallback * mCallback;
         bool mCancelled;
         pthread_mutex_t mLock;
-#ifdef __APPLE__
-        dispatch_queue_t mCallbackDispatchQueue;
-#endif
         
     };
     

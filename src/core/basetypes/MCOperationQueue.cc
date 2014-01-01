@@ -118,11 +118,7 @@ void OperationQueue::runOperations()
 void OperationQueue::performOnCallbackThread(Operation * op, Method method, void * context, bool waitUntilDone)
 {
 #if __APPLE__
-    dispatch_queue_t queue = op->callbackDispatchQueue();
-    if (queue == NULL) {
-        queue = dispatch_get_main_queue();
-    }
-    performMethodOnDispatchQueue(method, context, op->callbackDispatchQueue(), waitUntilDone);
+    performMethodOnDispatchQueue(method, context, mailcore::operation_callback_queue, waitUntilDone);
 #else
     performMethodOnMainThread(method, context, waitUntilDone);
 #endif

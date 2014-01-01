@@ -81,8 +81,6 @@ public:
     return MCO_NATIVE_INSTANCE->isCancelled();
 }
 
-MCO_OBJC_SYNTHESIZE_SCALAR(dispatch_queue_t, dispatch_queue_t, setCallbackDispatchQueue, callbackDispatchQueue);
-
 - (void) cancel
 {
     if (_started) {
