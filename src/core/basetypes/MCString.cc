@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#define U_DISABLE_RENAMING 1
 #include <unicode/ustring.h>
 #include <unicode/ucnv.h>
 #include <unicode/utypes.h>
@@ -1817,6 +1818,7 @@ bool String::hasPrefix(String * prefix)
 
 String * String::lastPathComponent()
 {
+    // TODO: Improve Windows compatibility.
     UChar * component = u_strrchr(mUnicodeChars, '/');
     if (component == NULL)
         return (String *) this->copy()->autorelease();
@@ -1911,6 +1913,7 @@ String * String::stringWithFileSystemRepresentation(const char * filename)
 
 String * String::stringByAppendingPathComponent(String * component)
 {
+    // TODO: Improve Windows compatibility.
     String * result = (String *) this->copy()->autorelease();
     if (result->length() > 0) {
         UChar lastChar = result->unicodeCharacters()[result->length() - 1];
