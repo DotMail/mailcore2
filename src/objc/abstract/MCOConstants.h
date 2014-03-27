@@ -1,6 +1,6 @@
-#ifndef __MAILCORE_MCOCONSTANTS_H_
+#ifndef MAILCORE_MCOCONSTANTS_H
 
-#define __MAILCORE_MCOCONSTANTS_H_
+#define MAILCORE_MCOCONSTANTS_H
 
 /** It's the connection type.*/
 typedef enum {
@@ -35,6 +35,8 @@ typedef enum {
     MCOAuthTypeSASLKerberosV4    = 1 << 7,
     /** OAuth2 authentication.*/
     MCOAuthTypeXOAuth2           = 1 << 8,
+    /** OAuth2 authentication on outlook.com.*/
+    MCOAuthTypeXOAuth2Outlook    = 1 << 9,
 } MCOAuthType;
 
 /** It's the IMAP flags of the folder.*/
@@ -72,6 +74,9 @@ typedef enum {
     MCOIMAPFolderFlagJunk        = MCOIMAPFolderFlagSpam,
     /** \Flagged: When the folder contains all the flagged emails.*/
     MCOIMAPFolderFlagFlagged     = MCOIMAPFolderFlagStarred,
+    /** Mask to identify the folder */
+    MCOIMAPFolderFlagFolderTypeMask = MCOIMAPFolderFlagInbox | MCOIMAPFolderFlagSentMail | MCOIMAPFolderFlagStarred | MCOIMAPFolderFlagAllMail |
+      MCOIMAPFolderFlagTrash| MCOIMAPFolderFlagDrafts | MCOIMAPFolderFlagSpam | MCOIMAPFolderFlagImportant | MCOIMAPFolderFlagArchive,
 } MCOIMAPFolderFlag;
 
 /** It's the flags of a message.*/
@@ -181,12 +186,54 @@ typedef enum {
     MCOIMAPSearchKindUids,
     /** Match headers of the message.*/
     MCOIMAPSearchKindHeader,
+    /** Match messages that are read.*/
+    MCOIMAPSearchKindRead,
+    /** Match messages that are not read.*/
+    MCOIMAPSearchKindUnread,
+    /** Match messages that are flagged.*/
+    MCOIMAPSearchKindFlagged,
+    /** Match messages that are not flagged.*/
+    MCOIMAPSearchKindUnflagged,
+    /** Match messages that are answered.*/
+    MCOIMAPSearchKindAnswered,
+    /** Match messages that are not answered.*/
+    MCOIMAPSearchKindUnanswered,
+    /** Match messages that are a drafts.*/
+    MCOIMAPSearchKindDraft,
+    /** Match messages that are not drafts.*/
+    MCOIMAPSearchKindUndraft,
+    /** Match messages that are deleted.*/
+    MCOIMAPSearchKindDeleted,
+    /** Match messages that are spam.*/
+    MCOIMAPSearchKindSpam,
+    /** Match messages before the given date.*/
+    MCOIMAPSearchKindBeforeDate,
+    /** Match messages on the given date.*/
+    MCOIMAPSearchKindOnDate,
+    /** Match messages after the given date.*/
+    MCOIMAPSearchKindSinceDate,
+    /** Match messages before the given received date.*/
+    MCOIMAPSearchKindBeforeReceivedDate,
+    /** Match messages on the given received date.*/
+    MCOIMAPSearchKindOnReceivedDate,
+    /** Match messages after the given received date.*/
+    MCOIMAPSearchKindSinceReceivedDate,
+    /** Match messages that are larger than the given size in bytes.*/
+    MCOIMAPSearchKindSizeLarger,
+    /** Match messages that are smaller than the given size in bytes.*/
+    MCOIMAPSearchKindSizeSmaller,
     /** Match X-GM-THRID.*/
     MCOIMAPSearchGmailThreadID,
+    /** Match X-GM-MSGID.*/
+    MCOIMAPSearchGmailMessageID,
+    /** Match X-GM-RAW.*/
+    MCOIMAPSearchGmailRaw,
     /** Or expresssion.*/
     MCOIMAPSearchKindOr,
     /** And expression.*/
     MCOIMAPSearchKindAnd,
+    /** Not expression.*/
+    MCOIMAPSearchKindNot,
 } MCOIMAPSearchKind;
 
 /** Keys for the namespace dictionary.*/

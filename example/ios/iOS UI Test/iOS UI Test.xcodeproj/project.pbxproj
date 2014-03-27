@@ -532,7 +532,9 @@
 				OTHER_LDFLAGS = (
 					"-lctemplate-ios",
 					"-letpan-ios",
-					"-licucore",
+					"-licudata",
+					"-licui18n",
+					"-licuuc",
 					"-lxml2",
 					"-lsasl2",
 					"-liconv",
@@ -540,6 +542,7 @@
 					"-ltidy",
 					"-lstdc++",
 					"-lz",
+					"-licucore",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -556,7 +559,9 @@
 				OTHER_LDFLAGS = (
 					"-lctemplate-ios",
 					"-letpan-ios",
-					"-licucore",
+					"-licudata",
+					"-licui18n",
+					"-licuuc",
 					"-lxml2",
 					"-lsasl2",
 					"-liconv",
@@ -564,6 +569,7 @@
 					"-ltidy",
 					"-lstdc++",
 					"-lz",
+					"-licucore",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;

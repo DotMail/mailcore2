@@ -25,6 +25,9 @@ OperationQueue::OperationQueue()
     mWaitingFinishedSem = mailsem_new();
     mQuitting = false;
     mCallback = NULL;
+#if __APPLE__
+    mDispatchQueue = dispatch_get_main_queue();
+#endif
 }
 
 OperationQueue::~OperationQueue()
@@ -44,6 +47,16 @@ void OperationQueue::addOperation(Operation * op)
     pthread_mutex_unlock(&mLock);
     mailsem_up(mOperationSem);
     startThread();
+}
+
+void OperationQueue::cancelAllOperations()
+{
+    pthread_mutex_lock(&mLock);
+    for (unsigned int i = 0 ; i < mOperations->count() ; i ++) {
+        Operation * op = (Operation *) mOperations->objectAtIndex(i);
+        op->cancel();
+    }
+    pthread_mutex_unlock(&mLock);
 }
 
 void OperationQueue::runOperationsOnThread(OperationQueue * queue)
@@ -78,7 +91,11 @@ void OperationQueue::runOperations()
             mailsem_up(mStopSem);
             
             retain(); // (2)
+#if __APPLE__
+            performMethodOnDispatchQueue((Object::Method) &OperationQueue::stoppedOnMainThread, NULL, mDispatchQueue, true);
+#else
             performMethodOnMainThread((Object::Method) &OperationQueue::stoppedOnMainThread, NULL, true);
+#endif
             
             pool->release();
             break;
@@ -86,7 +103,9 @@ void OperationQueue::runOperations()
 
         performOnCallbackThread(op, (Object::Method) &OperationQueue::beforeMain, op, true);
         
-        op->main();
+        if (!op->isCancelled() || op->shouldRunWhenCancelled()) {
+            op->main();
+        }
         
         op->retain()->autorelease();
         
@@ -106,8 +125,12 @@ void OperationQueue::runOperations()
         
         if (needsCheckRunning) {
             retain(); // (1)
-            MCLog("check running %p", this);
+            //MCLog("check running %p", this);
+#if __APPLE__
+            performMethodOnDispatchQueue((Object::Method) &OperationQueue::checkRunningOnMainThread, this, mDispatchQueue);
+#else
             performMethodOnMainThread((Object::Method) &OperationQueue::checkRunningOnMainThread, this);
+#endif
         }
         
         pool->release();
@@ -237,5 +260,17 @@ void OperationQueue::waitUntilAllOperationsAreFinished()
         sem_wait(&mWaitingFinishedSem);
     }
     mWaiting = false;
+}
+#endif
+
+#if __APPLE__
+void OperationQueue::setDispatchQueue(dispatch_queue_t dispatchQueue)
+{
+    mDispatchQueue = dispatchQueue;
+}
+
+dispatch_queue_t OperationQueue::dispatchQueue()
+{
+    return mDispatchQueue;
 }
 #endif

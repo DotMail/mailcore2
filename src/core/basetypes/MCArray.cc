@@ -180,6 +180,11 @@ Object * Array::lastObject()
     return objectAtIndex(count() - 1);
 }
 
+void Array::removeLastObject()
+{
+    removeObjectAtIndex(count() - 1);
+}
+
 bool Array::containsObject(Object * obj)
 {
     return (indexOfObject(obj) != -1);
@@ -222,6 +227,23 @@ Array * Array::sortedArray(int (* compare)(void * a, void * b, void * context), 
         &data);
 #endif
     return result;
+}
+
+void Array::sortArray(int (* compare)(void * a, void * b, void * context), void * context)
+{
+    struct sortData data;
+    data.compare = compare;
+    data.context = context;
+#ifdef __MACH__
+    qsort_r(carray_data(mArray), carray_count(mArray),
+            sizeof(* carray_data(mArray)), &data,
+            (int (*)(void *, const void *, const void *)) sortCompare);
+#else
+    qsort_r(carray_data(mArray), carray_count(mArray),
+            sizeof(* carray_data(mArray)),
+            (int (*)(const void *, const void *, void *)) sortCompare,
+            &data);
+#endif
 }
 
 String * Array::componentsJoinedByString(String * delimiter)

@@ -28,7 +28,13 @@ void IMAPMultiDisconnectOperation::addOperation(IMAPOperation * op)
 
 void IMAPMultiDisconnectOperation::start()
 {
+    if (_operations->count() == 0) {
+        callback()->operationFinished(this);
+        return;
+    }
+    
     mc_foreacharray(IMAPOperation, op, _operations) {
+        op->setCallbackDispatchQueue(this->callbackDispatchQueue());
         op->setCallback(this);
         op->start();
     }

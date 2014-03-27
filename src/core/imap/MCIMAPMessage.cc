@@ -5,6 +5,7 @@
 #include "MCIMAPMessagePart.h"
 #include "MCIMAPMultipart.h"
 #include "MCHTMLRenderer.h"
+#include "MCHTMLRendererCallback.h"
 
 using namespace mailcore;
 
@@ -17,6 +18,7 @@ void IMAPMessage::init()
     mUid = 0;
     mFlags = MessageFlagNone;
     mOriginalFlags = MessageFlagNone;
+    mCustomFlags = NULL;
     mMainPart = NULL;
     mGmailLabels = NULL;
     mModSeqValue = 0;
@@ -35,6 +37,7 @@ IMAPMessage::IMAPMessage(IMAPMessage * other) : AbstractMessage(other)
     setUid(other->uid());
     setFlags(other->flags());
     setOriginalFlags(other->originalFlags());
+    setCustomFlags(other->customFlags());
     setMainPart((AbstractPart *) other->mainPart()->copy()->autorelease());
     setGmailLabels(other->gmailLabels());
     setGmailThreadID(other->gmailThreadID());
@@ -45,6 +48,7 @@ IMAPMessage::~IMAPMessage()
 {
     MC_SAFE_RELEASE(mMainPart);
     MC_SAFE_RELEASE(mGmailLabels);
+    MC_SAFE_RELEASE(mCustomFlags);
 }
 
 Object * IMAPMessage::copy()
@@ -103,6 +107,16 @@ void IMAPMessage::setOriginalFlags(MessageFlag flags)
 MessageFlag IMAPMessage::originalFlags()
 {
     return mOriginalFlags;
+}
+
+void IMAPMessage::setCustomFlags(Array * customFlags)
+{
+   MC_SAFE_REPLACE_COPY(Array, mCustomFlags, customFlags);
+}
+
+Array * IMAPMessage::customFlags()
+{
+    return mCustomFlags;
 }
 
 void IMAPMessage::setModSeqValue(uint64_t uid)
@@ -226,7 +240,12 @@ HashMap * IMAPMessage::serializable()
     result->setObjectForKey(MCSTR("size"), String::stringWithUTF8Format("%lu", (long unsigned) uid()));
     result->setObjectForKey(MCSTR("flags"), String::stringWithUTF8Format("%u", (unsigned) flags()));
     result->setObjectForKey(MCSTR("originalFlags"), String::stringWithUTF8Format("%u", (unsigned) originalFlags()));
-    result->setObjectForKey(MCSTR("mainPart"), mMainPart->serializable());
+    if (customFlags() != NULL) {
+        result->setObjectForKey(MCSTR("customFlags"), customFlags());
+    }
+    if (mMainPart != NULL) {
+        result->setObjectForKey(MCSTR("mainPart"), mMainPart->serializable());
+    }
     if (gmailLabels() != NULL) {
         result->setObjectForKey(MCSTR("gmailLabels"), gmailLabels());
     }
@@ -261,6 +280,10 @@ void IMAPMessage::importSerializable(HashMap * serializable)
     String * originalFlags = (String *) serializable->objectForKey(MCSTR("originalFlags"));
     if (originalFlags != NULL) {
         setFlags((MessageFlag) originalFlags->unsignedIntValue());
+    }
+    String * customFlags = (String *) serializable->objectForKey(MCSTR("customFlags"));
+    if (customFlags != NULL) {
+        setCustomFlags((Array *) serializable->objectForKey(MCSTR("customFlags")));
     }
     setMainPart((AbstractPart *) Object::objectWithSerializable((HashMap *) serializable->objectForKey(MCSTR("mainPart"))));
     setGmailLabels((Array *) serializable->objectForKey(MCSTR("gmailLabels")));

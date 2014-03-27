@@ -6,13 +6,13 @@
 //  Copyright (c) 2013 MailCore. All rights reserved.
 //
 
-#ifndef __MAILCORE_MCOADDRESS_H_
+#ifndef MAILCORE_MCOADDRESS_H
 
-#define __MAILCORE_MCOADDRESS_H_
+#define MAILCORE_MCOADDRESS_H
 
 #import <Foundation/Foundation.h>
 
-@interface MCOAddress : NSObject <NSCopying>
+@interface MCOAddress : NSObject <NSCopying, NSCoding>
 
 /** Creates an address with a display name and a mailbox.
 
