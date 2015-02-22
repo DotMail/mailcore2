@@ -29,12 +29,39 @@
 
 #define MCSTR(str) mailcore::String::uniquedStringWithUTF8Characters("" str "")
 
-#define MCUTF8(str) ((str) != NULL ? (str)->UTF8Characters() : NULL )
+#define MCUTF8(str) MCUTF8DESC(str)
 #define MCUTF8DESC(obj) ((obj) != NULL ? (obj)->description()->UTF8Characters() : NULL )
 
 #define MCLOCALIZEDSTRING(key) key
 
 #define MCISKINDOFCLASS(instance, class) (dynamic_cast<class *>(instance) != NULL)
+
+#endif
+
+#ifdef _MSC_VER
+#	ifdef MAILCORE_DLL
+#		define MAILCORE_EXPORT __declspec(dllexport)
+#	else
+#		define MAILCORE_EXPORT __declspec(dllimport)
+#   endif
+#else
+#	define MAILCORE_EXPORT
+#endif
+
+#ifdef __clang__
+
+#if __has_feature(attribute_analyzer_noreturn)
+#define CLANG_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
+#else
+#define CLANG_ANALYZER_NORETURN
+#endif
+
+#define ATTRIBUTE_RETURNS_NONNULL __attribute__((returns_nonnull))
+
+#else
+
+#define CLANG_ANALYZER_NORETURN
+#define ATTRIBUTE_RETURNS_NONNULL
 
 #endif
 

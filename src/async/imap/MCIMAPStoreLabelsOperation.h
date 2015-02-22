@@ -16,13 +16,16 @@
 
 namespace mailcore {
     
-    class IMAPStoreLabelsOperation : public IMAPOperation {
+    class MAILCORE_EXPORT IMAPStoreLabelsOperation : public IMAPOperation {
     public:
         IMAPStoreLabelsOperation();
         virtual ~IMAPStoreLabelsOperation();
         
         virtual void setUids(IndexSet * uids);
         virtual IndexSet * uids();
+        
+        virtual void setNumbers(IndexSet * numbers);
+        virtual IndexSet * numbers();
         
         virtual void setKind(IMAPStoreFlagsRequestKind kind);
         virtual IMAPStoreFlagsRequestKind kind();
@@ -35,6 +38,7 @@ namespace mailcore {
         
     private:
         IndexSet * mUids;
+        IndexSet * mNumbers;
         IMAPStoreFlagsRequestKind mKind;
         Array * /* String */ mLabels;
         

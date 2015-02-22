@@ -15,10 +15,13 @@ namespace mailcore {
     class HTMLRendererIMAPCallback;
     class HTMLRendererTemplateCallback;
     
-    class IMAPMessage : public AbstractMessage {
+    class MAILCORE_EXPORT IMAPMessage : public AbstractMessage {
     public:
         IMAPMessage();
         virtual ~IMAPMessage();
+        
+        virtual uint32_t sequenceNumber();
+        virtual void setSequenceNumber(uint32_t sequenceNumber);
         
         virtual uint32_t uid();
         virtual void setUid(uint32_t uid);
@@ -70,6 +73,7 @@ namespace mailcore {
         uint64_t mModSeqValue;
         uint32_t mUid;
         uint32_t mSize;
+        uint32_t mSequenceNumber; // not serialized.
         
         MessageFlag mFlags;
         MessageFlag mOriginalFlags;

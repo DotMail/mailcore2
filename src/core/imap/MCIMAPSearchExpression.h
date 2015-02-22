@@ -9,7 +9,7 @@
 
 namespace mailcore {
     
-    class IMAPSearchExpression : public Object {
+    class MAILCORE_EXPORT IMAPSearchExpression : public Object {
     public:
         IMAPSearchExpression();
         virtual ~IMAPSearchExpression();
@@ -33,6 +33,7 @@ namespace mailcore {
         static IMAPSearchExpression * searchRecipient(String * value);
         static IMAPSearchExpression * searchSubject(String * value);
         static IMAPSearchExpression * searchContent(String * value);
+        static IMAPSearchExpression * searchBody(String * value);
         static IMAPSearchExpression * searchHeader(String * header, String * value);
         static IMAPSearchExpression * searchUIDs(IndexSet * uids);
         static IMAPSearchExpression * searchRead();

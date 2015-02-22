@@ -15,7 +15,7 @@ namespace mailcore {
     class OperationQueueCallback;
     class Array;
     
-    class OperationQueue : public Object {
+    class MAILCORE_EXPORT OperationQueue : public Object {
     public:
         OperationQueue();
         virtual ~OperationQueue();
@@ -48,6 +48,7 @@ namespace mailcore {
 #if __APPLE__
         dispatch_queue_t mDispatchQueue;
 #endif
+        bool _pendingCheckRunning;
         
         void startThread();
         static void runOperationsOnThread(OperationQueue * queue);

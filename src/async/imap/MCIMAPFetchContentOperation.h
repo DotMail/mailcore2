@@ -16,13 +16,16 @@
 
 namespace mailcore {
     
-    class IMAPFetchContentOperation : public IMAPOperation {
+    class MAILCORE_EXPORT IMAPFetchContentOperation : public IMAPOperation {
     public:
         IMAPFetchContentOperation();
         virtual ~IMAPFetchContentOperation();
         
         virtual void setUid(uint32_t uid);
         virtual uint32_t uid();
+        
+        virtual void setNumber(uint32_t value);
+        virtual uint32_t number();
         
         virtual void setPartID(String * partID);
         virtual String * partID();
@@ -38,6 +41,7 @@ namespace mailcore {
         
     private:
         uint32_t mUid;
+        uint32_t mNumber;
         String * mPartID;
         Encoding mEncoding;
         Data * mData;

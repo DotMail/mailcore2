@@ -22,7 +22,7 @@ namespace mailcore {
     class IMAPFolderStatus;
     class IMAPIdentity;
     
-    class IMAPSession : public Object {
+    class MAILCORE_EXPORT IMAPSession : public Object {
     public:
         IMAPSession();
         virtual ~IMAPSession();
@@ -83,9 +83,11 @@ namespace mailcore {
                                    IMAPProgressCallback * progressCallback, uint32_t * createdUID, ErrorCode * pError);
         virtual void appendMessageWithCustomFlags(String * folder, Data * messageData, MessageFlag flags, Array * customFlags,
                                    IMAPProgressCallback * progressCallback, uint32_t * createdUID, ErrorCode * pError);
+        virtual void appendMessageWithCustomFlagsAndDate(String * folder, Data * messageData, MessageFlag flags, Array * customFlags, time_t date,
+                                                         IMAPProgressCallback * progressCallback, uint32_t * createdUID, ErrorCode * pError);
         
-        void copyMessages(String * folder, IndexSet * uidSet, String * destFolder,
-                          HashMap ** pUidMapping, ErrorCode * pError);
+        virtual void copyMessages(String * folder, IndexSet * uidSet, String * destFolder,
+                                  HashMap ** pUidMapping, ErrorCode * pError);
         
         virtual void expunge(String * folder, ErrorCode * pError);
         
@@ -108,8 +110,12 @@ namespace mailcore {
 
         virtual Data * fetchMessageByUID(String * folder, uint32_t uid,
                                          IMAPProgressCallback * progressCallback, ErrorCode * pError);
+        virtual Data * fetchMessageByNumber(String * folder, uint32_t number,
+                                            IMAPProgressCallback * progressCallback, ErrorCode * pError);
         virtual Data * fetchMessageAttachmentByUID(String * folder, uint32_t uid, String * partID,
                                                    Encoding encoding, IMAPProgressCallback * progressCallback, ErrorCode * pError);
+        virtual Data * fetchMessageAttachmentByNumber(String * folder, uint32_t number, String * partID,
+                                                      Encoding encoding, IMAPProgressCallback * progressCallback, ErrorCode * pError);
         virtual HashMap * fetchMessageNumberUIDMapping(String * folder, uint32_t fromUID, uint32_t toUID,
                                                        ErrorCode * pError);
         
@@ -123,9 +129,13 @@ namespace mailcore {
                                                                    IMAPProgressCallback * progressCallback,
                                                                    Array * extraHeaders, ErrorCode * pError);
         
-        virtual void storeFlags(String * folder, IndexSet * uids, IMAPStoreFlagsRequestKind kind, MessageFlag flags, ErrorCode * pError);
-        virtual void storeFlagsAndCustomFlags(String * folder, IndexSet * uids, IMAPStoreFlagsRequestKind kind, MessageFlag flags, Array * customFlags, ErrorCode * pError);
-        virtual void storeLabels(String * folder, IndexSet * uids, IMAPStoreFlagsRequestKind kind, Array * labels, ErrorCode * pError);
+        virtual void storeFlagsByUID(String * folder, IndexSet * uids, IMAPStoreFlagsRequestKind kind, MessageFlag flags, ErrorCode * pError);
+        virtual void storeFlagsAndCustomFlagsByUID(String * folder, IndexSet * uids, IMAPStoreFlagsRequestKind kind, MessageFlag flags, Array * customFlags, ErrorCode * pError);
+        virtual void storeFlagsByNumber(String * folder, IndexSet * numbers, IMAPStoreFlagsRequestKind kind, MessageFlag flags, ErrorCode * pError);
+        virtual void storeFlagsAndCustomFlagsByNumber(String * folder, IndexSet * numbers, IMAPStoreFlagsRequestKind kind, MessageFlag flags, Array * customFlags, ErrorCode * pError);
+        
+        virtual void storeLabelsByUID(String * folder, IndexSet * uids, IMAPStoreFlagsRequestKind kind, Array * labels, ErrorCode * pError);
+        virtual void storeLabelsByNumber(String * folder, IndexSet * numbers, IMAPStoreFlagsRequestKind kind, Array * labels, ErrorCode * pError);
         
         virtual IndexSet * search(String * folder, IMAPSearchKind kind, String * searchString, ErrorCode * pError);
         virtual IndexSet * search(String * folder, IMAPSearchExpression * expression, ErrorCode * pError);
@@ -145,7 +155,7 @@ namespace mailcore {
         
         virtual void login(ErrorCode * pError);
         
-        IMAPIdentity * identity(IMAPIdentity * clientIdentity, ErrorCode * pError);
+        virtual IMAPIdentity * identity(IMAPIdentity * clientIdentity, ErrorCode * pError);
         
         virtual IndexSet * capability(ErrorCode * pError);
         
@@ -165,7 +175,8 @@ namespace mailcore {
         virtual bool isXOAuthEnabled();
         virtual bool isNamespaceEnabled();
         virtual bool isCompressionEnabled();
-        
+        virtual bool allowsNewPermanentFlags(); 
+      
         virtual String * gmailUserDisplayName();
         
         virtual void setConnectionLogger(ConnectionLogger * logger);
@@ -225,6 +236,7 @@ namespace mailcore {
         bool mNamespaceEnabled;
         bool mCompressionEnabled;
         bool mIsGmail;
+        bool mAllowsNewPermanentFlags;
         String * mWelcomeString;
         bool mNeedsMboxMailWorkaround;
         uint32_t mUIDValidity;
@@ -260,12 +272,22 @@ namespace mailcore {
         void unsetup();
         char fetchDelimiterIfNeeded(char defaultDelimiter, ErrorCode * pError);
         IMAPSyncResult * fetchMessages(String * folder, IMAPMessagesRequestKind requestKind,
-                                       bool fetchByUID, struct mailimap_set * imapset, uint64_t modseq,
-                                       HashMap * mapping, uint32_t startUid, IMAPProgressCallback * progressCallback,
+                                       bool fetchByUID, struct mailimap_set * imapset,
+                                       IndexSet * uidsFilter, IndexSet * numbersFilter,
+                                       uint64_t modseq,
+                                       HashMap * mapping, IMAPProgressCallback * progressCallback,
                                        Array * extraHeaders, ErrorCode * pError);
         void capabilitySetWithSessionState(IndexSet * capabilities);
         bool enableFeature(String * feature);
         void enableFeatures();
+        Data * fetchMessage(String * folder, bool identifier_is_uid, uint32_t identifier,
+                            IMAPProgressCallback * progressCallback, ErrorCode * pError);
+        void storeFlagsAndCustomFlags(String * folder, bool identifier_is_uid, IndexSet * identifiers,
+                                      IMAPStoreFlagsRequestKind kind, MessageFlag flags, Array * customFlags, ErrorCode * pError);
+        Data * fetchMessageAttachment(String * folder, bool identifier_is_uid,
+                                      uint32_t identifier, String * partID,
+                                      Encoding encoding, IMAPProgressCallback * progressCallback, ErrorCode * pError);
+        void storeLabels(String * folder, bool identifier_is_uid, IndexSet * identifiers, IMAPStoreFlagsRequestKind kind, Array * labels, ErrorCode * pError);
     };
     
 }

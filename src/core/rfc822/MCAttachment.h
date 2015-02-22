@@ -13,7 +13,7 @@ namespace mailcore {
     
     class MessagePart;
     
-    class Attachment : public AbstractPart {
+    class MAILCORE_EXPORT Attachment : public AbstractPart {
     public:
         static String * mimeTypeForFilename(String * filename);
         static Attachment * attachmentWithContentsOfFile(String * filename);
@@ -46,6 +46,7 @@ namespace mailcore {
         static MessagePart * attachmentWithMessageMIME(struct mailmime * mime);
         static Encoding encodingForMIMEEncoding(struct mailmime_mechanism * mechanism, int defaultMimeEncoding);
         static HashMap * readMimeTypesFile(String * filename);
+        void setContentTypeParameters(HashMap * parameters);
     };
     
 }

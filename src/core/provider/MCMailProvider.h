@@ -18,7 +18,7 @@ namespace mailcore {
     
     class NetService;
     
-    class MailProvider : public Object {
+    class MAILCORE_EXPORT MailProvider : public Object {
     public:
         static MailProvider * providerWithInfo(HashMap * info);
         
@@ -57,6 +57,7 @@ namespace mailcore {
     private:
         String * mIdentifier;
         Array * /* String */ mDomainMatch;
+        Array * /* String */ mDomainExclude;
         Array * /* String */ mMxMatch;
         Array * /* NetService */ mImapServices;
         Array * /* NetService */ mSmtpServices;
